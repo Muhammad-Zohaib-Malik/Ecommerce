@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -16,38 +17,6 @@ const userSchema = new mongoose.Schema(
       required: [true, 'password is required'],
       minLength: [6, 'password length should be greater then 6 character'],
     },
-    address: {
-      type: String,
-      required: [true, 'address is required'],
-      trim: true,
-    },
-    city: {
-      type: String,
-      required: [true, 'city name is required'],
-      trim: true,
-    },
-    country: {
-      type: String,
-      required: [true, 'country name is required'],
-      trim: true,
-    },
-    phone: {
-      type: String,
-      required: [true, 'phone no is required'],
-      trim: true,
-    },
-    profilePic: {
-      public_id: {
-        type: String,
-      },
-      url: {
-        type: String,
-      },
-    },
-    answer: {
-      type: String,
-      required: [true, 'answer is required'],
-    },
     role: {
       type: String,
       default: 'user',
@@ -55,5 +24,11 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
 
 export const User = mongoose.model('User', userSchema);
