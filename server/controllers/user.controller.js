@@ -11,8 +11,7 @@ const generateAccess = async (userId) => {
     }
 
     const accessToken = await user.generateAccessToken();
-    return accessToken
-
+    return accessToken;
   } catch (error) {
     throw new ApiError(500, 'Something went wrong while generating access');
   }
@@ -65,8 +64,7 @@ export const loginController = asyncHandler(async (req, res) => {
   }
 
   const accessToken = await generateAccess(user._id);
-  console.log('Access Token:', accessToken); // 
-
+  console.log('Access Token:', accessToken);
 
   const loggedInUser = await User.findById(user._id).select('-password');
 
@@ -98,7 +96,7 @@ export const logoutController = asyncHandler(async (_, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, {}, 'User logged out successfully'));
-})
+});
 
 export const getUserProfileController = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select('-password');
@@ -122,11 +120,34 @@ export const updateProfileController = asyncHandler(async (req, res) => {
   user.name = name || user.name;
   user.email = email || user.email;
 
-  await user.save()
-
+  await user.save();
 
   return res
     .status(200)
     .json(new ApiResponse(200, user, 'User Profile updates successfully'));
+});
 
-})
+export const updatePasswordController = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  if (!oldPassword || !newPassword) {
+    throw new ApiError(400, 'All fields are required');
+  }
+
+  const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordValid) {
+    throw new ApiError('400', 'Invalid Old Password');
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, 'Password Changed Successfully'));
+});
