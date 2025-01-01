@@ -3,6 +3,21 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 
+const generateAccess = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    const accessToken = await user.generateAccessToken();
+    return accessToken
+
+  } catch (error) {
+    throw new ApiError(500, 'Something went wrong while generating access');
+  }
+};
+
 export const registerController = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -49,7 +64,9 @@ export const loginController = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Invalid user credentials');
   }
 
-  const accessToken = user.generateAccessToken();
+  const accessToken = await generateAccess(user._id);
+  console.log('Access Token:', accessToken); // 
+
 
   const loggedInUser = await User.findById(user._id).select('-password');
 
@@ -68,4 +85,22 @@ export const loginController = asyncHandler(async (req, res) => {
         'User loggedIn successfully'
       )
     );
+});
+
+export const logoutController = asyncHandler(async (_, res) => {
+  res.clearCookie('accessToken', { maxAge: 0 });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, 'User logged out successfully'));
+})
+
+export const getUserProfileController = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password');
+  if (!user) {
+    throw new ApiError(400, 'User not found');
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, 'User fetched successfully'));
 });
