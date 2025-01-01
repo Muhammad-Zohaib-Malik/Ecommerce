@@ -2,6 +2,11 @@ import { User } from '../models/user.model.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
+import {
+  deleteImageFromCloudinary,
+  uploadOnCloudinary,
+} from '../utils/cloudinary.js';
+import fs from 'fs';
 
 const generateAccess = async (userId) => {
   try {
@@ -150,4 +155,53 @@ export const updatePasswordController = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, {}, 'Password Changed Successfully'));
+});
+
+export const updateProfilePicController = asyncHandler(async (req, res) => {
+  const profilePic = req.file;
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  if (profilePic) {
+    // Log the file path for debugging
+    console.log('Uploaded file path:', profilePic.path);
+
+    // Delete the old profile picture from Cloudinary if it exists
+    if (user.profilePicId) {
+      try {
+        await deleteImageFromCloudinary(user.profilePicId);
+      } catch (error) {
+        console.error('Error deleting existing profile picture:', error);
+      }
+    }
+
+    // Attempt to upload the new profile picture to Cloudinary
+    try {
+      const uploadResult = await uploadOnCloudinary(profilePic.path);
+
+      if (!uploadResult) {
+        throw new Error('Cloudinary upload returned undefined.');
+      }
+
+      const { secure_url, public_id } = uploadResult;
+
+      // Update user's profile picture details
+      user.profilePic = secure_url;
+      user.profilePicId = public_id;
+
+      fs.unlinkSync(profilePic.path);
+    } catch (error) {
+      console.error('Error uploading profile picture to Cloudinary:', error);
+      throw new ApiError(500, 'Failed to upload profile picture');
+    }
+  }
+
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, 'Profile Pic Updated'));
 });
