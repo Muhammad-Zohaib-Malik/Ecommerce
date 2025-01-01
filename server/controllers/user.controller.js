@@ -88,7 +88,13 @@ export const loginController = asyncHandler(async (req, res) => {
 });
 
 export const logoutController = asyncHandler(async (_, res) => {
-  res.clearCookie('accessToken', { maxAge: 0 });
+  const options = {
+    httpOnly: true,
+    secure: true,
+    maxAge: 0,
+  };
+
+  res.clearCookie('accessToken', options);
   return res
     .status(200)
     .json(new ApiResponse(200, {}, 'User logged out successfully'));
