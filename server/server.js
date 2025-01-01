@@ -4,8 +4,15 @@ import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 import userRouter from './routes/user.route.js';
 import cookieParser from 'cookie-parser';
+import { v2 as cloudinary } from 'cloudinary';
 
 dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();
 const port = process.env.PORT || 8080;
