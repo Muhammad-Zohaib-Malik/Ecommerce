@@ -110,3 +110,23 @@ export const getUserProfileController = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, 'User fetched successfully'));
 });
+
+export const updateProfileController = asyncHandler(async (req, res) => {
+  const { name, email } = req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  user.name = name || user.name;
+  user.email = email || user.email;
+
+  await user.save()
+
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, 'User Profile updates successfully'));
+
+})
