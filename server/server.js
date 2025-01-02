@@ -2,9 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
-import userRouter from './routes/user.route.js';
 import cookieParser from 'cookie-parser';
 import { v2 as cloudinary } from 'cloudinary';
+import userRouter from './routes/user.route.js';
+import productRouter from './routes/product.route.js';
 
 dotenv.config();
 
@@ -29,6 +30,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/product', productRouter);
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
