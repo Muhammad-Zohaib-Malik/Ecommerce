@@ -3,6 +3,7 @@ import {
   createProductController,
   getAllProductsController,
   getSingleProductsController,
+  updateProductController,
 } from '../controllers/product.controller.js';
 import { verify } from '../middlewares/auth.middleware.js';
 import { upload } from '../middlewares/multer.js';
@@ -16,6 +17,13 @@ productRouter.post(
   verify,
   upload.array('images', 4),
   createProductController
+);
+
+productRouter.put(
+  '/:id',
+  verify,
+  upload.array('images', 4),
+  updateProductController
 );
 
 export default productRouter;
