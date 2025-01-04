@@ -3,6 +3,7 @@ import {
   createProductController,
   getAllProductsController,
   getSingleProductsController,
+  updateImageProductController,
   updateProductController,
 } from '../controllers/product.controller.js';
 import { verify } from '../middlewares/auth.middleware.js';
@@ -20,10 +21,12 @@ productRouter.post(
 );
 
 productRouter.put(
-  '/:id',
+  '/update-image/:id',
   verify,
   upload.array('images', 4),
-  updateProductController
+  updateImageProductController
 );
+
+productRouter.put('/:id', verify, updateProductController);
 
 export default productRouter;
