@@ -3,7 +3,10 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import mongoose from 'mongoose';
-import { deleteImageFromCloudinary, uploadOnCloudinary } from '../utils/cloudinary.js';
+import {
+  deleteImageFromCloudinary,
+  uploadOnCloudinary,
+} from '../utils/cloudinary.js';
 import fs from 'fs';
 
 export const getAllProductsController = asyncHandler(async (req, res) => {
@@ -74,7 +77,6 @@ export const createProductController = asyncHandler(async (req, res) => {
 
 export const updateProductController = asyncHandler(async (req, res) => {
   const { name, description, price, category, stock } = req.body;
-  const images = req.files;
 
   // Validate required fields
   if (
@@ -91,7 +93,26 @@ export const updateProductController = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Product not found');
   }
 
-  // Delete old images from Cloudinary
+  // Update product details if provided
+  if (name) product.name = name;
+  if (description) product.description = description;
+  if (price) product.price = price;
+  if (category) product.category = category;
+  if (stock) product.stock = stock;
+
+  await product.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, product, 'Product updated successfully'));
+});
+
+export const updateImageProductController = asyncHandler(async (req, res) => {
+  const images = req.files;
+  const product = await Product.findById(req.params.id);
+  if (!product) {
+    throw new ApiError(404, 'Product not found');
+  }
   for (const imageId of product.imageId) {
     await deleteImageFromCloudinary(imageId);
   }
@@ -108,18 +129,16 @@ export const updateProductController = asyncHandler(async (req, res) => {
     fs.unlinkSync(path); // Remove file from server after upload
   }
 
-  // Update product details
-  product.name = name;
-  product.description = description;
-  product.price = price;
-  product.category = category;
-  product.stock = stock;
+  // Delete the old images from the database
+  product.images = [];
+  product.imageId = [];
+
+  // Add new images to the database
   product.images = uploadedImages;
   product.imageId = uploadedImageIds;
 
   await product.save();
-
   return res
     .status(200)
-    .json(new ApiResponse(200, product, 'Product updated successfully'));
+    .json(new ApiResponse(200, product, 'Product Image updated successfully'));
 });
