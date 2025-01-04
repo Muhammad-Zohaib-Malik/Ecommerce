@@ -142,3 +142,21 @@ export const updateImageProductController = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, product, 'Product Image updated successfully'));
 });
+
+export const deleteImageProductController = asyncHandler(async (req, res) => {
+  const product = await Product.findByIdAndDelete(req.params.id);
+  if (!product) {
+    throw new ApiError(404, 'Product not found');
+  }
+
+  // Delete images from Cloudinary
+  for (const imageId of product.imageId) {
+    await deleteImageFromCloudinary(imageId);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, null, 'Product and images deleted successfully')
+    );
+});
