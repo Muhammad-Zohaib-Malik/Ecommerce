@@ -50,3 +50,34 @@ export const deleteCategoryController = asyncHandler(async (req, res) => {
 
   return res.json(new ApiResponse(200, null, 'Category deleted successfully'));
 });
+
+export const updateCategoryController = asyncHandler(async (req, res) => {
+  const productId = req.params.id; // Product ID from the route
+  const { categoryId } = req.body; // Category ID to associate
+
+  if (!productId) {
+    throw new ApiError(400, 'Product ID is required');
+  }
+
+  if (!categoryId) {
+    throw new ApiError(400, 'Category ID is required');
+  }
+
+  // Check if the category exists
+  const category = await Category.findById(categoryId);
+  if (!category) {
+    throw new ApiError(404, 'Category not found');
+  }
+
+  const product = await Product.findById(productId);
+  if (!product) {
+    throw new ApiError(404, 'Product not found');
+  }
+
+  product.category = categoryId;
+  await product.save();
+
+  return res.json(
+    new ApiResponse(200, product, 'Category assigned to product successfully')
+  );
+});
