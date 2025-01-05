@@ -18,3 +18,10 @@ export const createCategory = asyncHandler(async (req, res) => {
     new ApiResponse(200, newCategory, 'Category created Successfully')
   );
 });
+
+export const getCategoryController = asyncHandler(async (req, res) => {
+  const category = await Category.find({});
+  return res.json(
+    new ApiResponse(200, category, 'Category fetched Successfully')
+  );
+});
