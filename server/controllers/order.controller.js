@@ -9,8 +9,6 @@ export const createOrderController = asyncHandler(async (req, res) => {
   const {
     shippingInfo,
     orderItems,
-    paymentMethod,
-    paymentInfo,
     itemPrice,
     tax,
     shippingCharges,
@@ -18,16 +16,12 @@ export const createOrderController = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
-    [
-      shippingInfo,
-      orderItems,
-      paymentMethod,
-      paymentInfo,
-      itemPrice,
-      tax,
-      shippingCharges,
-      totalAmount,
-    ].some((field) => field.trim() === '')
+    !shippingInfo ||
+    !orderItems ||
+    !itemPrice ||
+    !tax ||
+    !shippingCharges ||
+    !totalAmount
   ) {
     throw new ApiError(400, 'All fields are required');
   }
@@ -36,8 +30,6 @@ export const createOrderController = asyncHandler(async (req, res) => {
     user: req.user._id,
     shippingInfo,
     orderItems,
-    paymentMethod,
-    paymentInfo,
     itemPrice,
     tax,
     shippingCharges,
@@ -52,5 +44,5 @@ export const createOrderController = asyncHandler(async (req, res) => {
   }
   res
     .status(201)
-    .json(new ApiResponse(200, product, 'Order Placed Successfully'));
+    .json(new ApiResponse(200, order, 'Order Placed Successfully'));
 });
