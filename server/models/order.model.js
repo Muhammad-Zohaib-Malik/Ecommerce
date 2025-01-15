@@ -35,18 +35,18 @@ const orderSchmea = new mongoose.Schema({
         ref: 'Product',
         required: [true, 'Product ID is required'],
       },
-      images: [
-        {
-          type: String,
-          required: [true, 'Product image URL is required'],
-        },
-      ],
-      imageId: [
-        {
-          type: String,
-          required: [true, 'Product image ID is required'],
-        },
-      ],
+      // images: [
+      //   {
+      //     type: String,
+      //     required: [true, 'Product image URL is required'],
+      //   },
+      // ],
+      // imageId: [
+      //   {
+      //     type: String,
+      //     required: [true, 'Product image ID is required'],
+      //   },
+      // ],
     },
   ],
 
