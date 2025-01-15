@@ -51,6 +51,7 @@ export const deleteCategoryController = asyncHandler(async (req, res) => {
   return res.json(new ApiResponse(200, null, 'Category deleted successfully'));
 });
 
+// this is for if category is made and we have to put category id to product
 export const updateCategoryController = asyncHandler(async (req, res) => {
   const productId = req.params.id; // Product ID from the route
   const { categoryId } = req.body; // Category ID to associate
