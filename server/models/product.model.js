@@ -24,10 +24,6 @@ const productSchema = new mongoose.Schema(
       min: [0, 'Product stock must be a positive number'],
       default: 0,
     },
-    quantity: {
-      type: Number,
-      required: [true, 'product quantity is required'],
-    },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
