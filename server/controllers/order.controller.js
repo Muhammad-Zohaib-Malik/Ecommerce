@@ -82,3 +82,22 @@ export const getAllOrderController = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, orders, `orders :${orders.length}`));
 });
+
+export const changeOrderStausController = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) {
+    throw new ApiError(404, 'no orders found');
+  }
+
+  if (order.orderStatus === 'processing') order.orderStatus = 'shipped';
+  else if (order.orderStatus === 'shipped') {
+    order.orderStatus = 'deliverd';
+    order.deliverdAt = Date.now();
+  } else {
+    throw new ApiError(404, 'Order already deliverd');
+  }
+
+  await order.save();
+
+  res.status(200).json(new ApiResponse(201, order, 'order status updated'));
+});

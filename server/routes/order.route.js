@@ -1,6 +1,7 @@
 import express from 'express';
 import { isAdmin, verify } from '../middlewares/auth.middleware.js';
 import {
+  changeOrderStausController,
   createOrderController,
   getAllOrderController,
   getMyOrderController,
@@ -16,6 +17,8 @@ const orderRouter = express.Router();
 orderRouter.post('/create', verify, createOrderController);
 orderRouter.get('/my-orders', verify, getMyOrderController);
 orderRouter.get('/my-orders/:id', verify, getSingleOrderController);
+
+// admin
 orderRouter.get(
   '/admin/get-all-orders',
   verify,
@@ -23,8 +26,12 @@ orderRouter.get(
   getAllOrderController
 );
 
-// orderRouter.get('/get-all', verify, getAllOrdersController);
-// orderRouter.put('/update-status/:id', verify, updateOrderStatusController);
-// orderRouter.delete('/:id', verify, deleteOrderController);
+//change order status
+orderRouter.put(
+  '/admin/order/:id',
+  verify,
+  isAdmin,
+  changeOrderStausController
+);
 
 export default orderRouter;
