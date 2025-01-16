@@ -58,3 +58,13 @@ export const getMyOrderController = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, orders, `orders :${orders.length}`));
 });
+
+export const getSingleOrderController = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+
+  if (!order) {
+    throw new ApiError(404, 'no orders found');
+  }
+
+  res.status(201).json(new ApiResponse(200, order, 'Order fetched'));
+});
