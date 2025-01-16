@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import jwt from 'jsonwebtoken';
 
+// user middleware
 export const verify = asyncHandler(async (req, _, next) => {
   try {
     const token =
@@ -25,4 +26,12 @@ export const verify = asyncHandler(async (req, _, next) => {
   } catch (error) {
     throw new ApiError(401, error?.message || 'Invalid access token');
   }
+});
+
+export const isAdmin = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    throw new ApiError(401, 'Unauthorized access');
+  }
+
+  next();
 });
