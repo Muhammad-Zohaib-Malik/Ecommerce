@@ -1,5 +1,5 @@
 import express from 'express';
-import { verify } from '../middlewares/auth.middleware.js';
+import { isAdmin, verify } from '../middlewares/auth.middleware.js';
 import {
   createOrderController,
   getMyOrderController,

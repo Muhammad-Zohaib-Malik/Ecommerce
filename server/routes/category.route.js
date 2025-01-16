@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { verify } from '../middlewares/auth.middleware.js';
+import { isAdmin, verify } from '../middlewares/auth.middleware.js';
 import {
   createCategory,
   deleteCategoryController,
@@ -9,9 +9,9 @@ import {
 } from '../controllers/category.controller.js';
 const categoryRouter = express.Router();
 
-categoryRouter.post('/create', verify, createCategory);
+categoryRouter.post('/create', verify, isAdmin, createCategory);
 categoryRouter.get('/get-all', getCategoryController);
-categoryRouter.delete('/delete/:id', verify, deleteCategoryController);
-categoryRouter.put('/update/:id', verify, updateCategoryController); // product Id
+categoryRouter.delete('/delete/:id', verify, isAdmin, deleteCategoryController);
+categoryRouter.put('/update/:id', verify, isAdmin, updateCategoryController); // product Id
 
 export default categoryRouter;
