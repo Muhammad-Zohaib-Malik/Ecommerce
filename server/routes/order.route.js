@@ -2,6 +2,7 @@ import express from 'express';
 import { verify } from '../middlewares/auth.middleware.js';
 import {
   createOrderController,
+  getMyOrderController,
   // getOrderController,
   // getAllOrdersController,
   // updateOrderStatusController,
@@ -11,7 +12,7 @@ import {
 const orderRouter = express.Router();
 
 orderRouter.post('/create', verify, createOrderController);
-// orderRouter.get('/:id', verify, getOrderController);
+orderRouter.get('/my-orders', verify, getMyOrderController);
 // orderRouter.get('/get-all', verify, getAllOrdersController);
 // orderRouter.put('/update-status/:id', verify, updateOrderStatusController);
 // orderRouter.delete('/:id', verify, deleteOrderController);
