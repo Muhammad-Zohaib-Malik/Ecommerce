@@ -68,3 +68,17 @@ export const getSingleOrderController = asyncHandler(async (req, res) => {
 
   res.status(201).json(new ApiResponse(200, order, 'Order fetched'));
 });
+
+// admin controller
+
+export const getAllOrderController = asyncHandler(async (req, res) => {
+  const orders = await Order.find({});
+
+  if (!orders) {
+    throw new ApiError(404, 'no orders found');
+  }
+
+  res
+    .status(201)
+    .json(new ApiResponse(200, orders, `orders :${orders.length}`));
+});
