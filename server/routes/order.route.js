@@ -3,6 +3,7 @@ import { verify } from '../middlewares/auth.middleware.js';
 import {
   createOrderController,
   getMyOrderController,
+  getSingleOrderController,
   // getOrderController,
   // getAllOrdersController,
   // updateOrderStatusController,
@@ -13,6 +14,8 @@ const orderRouter = express.Router();
 
 orderRouter.post('/create', verify, createOrderController);
 orderRouter.get('/my-orders', verify, getMyOrderController);
+orderRouter.get('/my-orders/:id', verify, getSingleOrderController);
+
 // orderRouter.get('/get-all', verify, getAllOrdersController);
 // orderRouter.put('/update-status/:id', verify, updateOrderStatusController);
 // orderRouter.delete('/:id', verify, deleteOrderController);
