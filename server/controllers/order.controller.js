@@ -46,3 +46,15 @@ export const createOrderController = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, order, 'Order Placed Successfully'));
 });
+
+export const getMyOrderController = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id });
+
+  if (!orders) {
+    throw new ApiError(404, 'no orders found');
+  }
+
+  res
+    .status(201)
+    .json(new ApiResponse(200, orders, `orders :${orders.length}`));
+});
