@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { review } from './review.model';
 
 const productSchema = new mongoose.Schema(
   {
@@ -40,6 +41,15 @@ const productSchema = new mongoose.Schema(
         required: [true, 'Product image ID is required'],
       },
     ],
+    reviews: [review],
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    numReviews: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
