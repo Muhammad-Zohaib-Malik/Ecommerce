@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { review } from './review.model';
+import { review } from './review.model.js';
 
 const productSchema = new mongoose.Schema(
   {
@@ -41,7 +41,10 @@ const productSchema = new mongoose.Schema(
         required: [true, 'Product image ID is required'],
       },
     ],
-    reviews: [review],
+    reviews: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'review',
+    },
     rating: {
       type: Number,
       default: 0,
